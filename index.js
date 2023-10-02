@@ -32,10 +32,23 @@ const appointmentOptionCollextion = client.db('doctorprotailfive-main').collecti
 const bookingsCollextion = client.db('doctorprotailfive-main').collection('bookings')
 
 app.get('/appointmentoption', async (req,res)=>{
-  const query ={}
-  const option = await appointmentOptionCollextion.find(query).toArray();
+  
 
-res.send(option)
+  const date = req.query.date;
+            const query = {};
+            const options = await appointmentOptionCollextion.find(query).toArray();
+
+            // get the bookings of the provided date
+            const bookingQuery = { appointmentDate: date }
+            const alreadyBooked = await bookingsCollextion.find(bookingQuery).toArray();
+
+            // code carefully :D
+            options.forEach(option => {
+                const optionBooked = alreadyBooked.filter(book => book.treatment === option.name);
+                const bookedSlots = optionBooked.map(book => book.slot);
+  console.log(date, option.naem, bookedSlots)
+ })
+res.send(options)
 
 })
 // class -74-4 
@@ -49,11 +62,11 @@ app.patch('/bookings/:id')
 app.delete('/bookings/:id')
 
 */
-app.post('/bookings',async (req,res)=>{
+app.post('/bokings',async (req,res)=>{
   const booking =req.body 
   console.log(booking)
   const result= await bookingsCollextion.insertOne(booking)
-  req.send(result)
+  res.send(result)
 })
 
   }
