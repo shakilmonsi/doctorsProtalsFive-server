@@ -29,6 +29,7 @@ const client = new MongoClient(uri, {
 async function run(){
   try{
 const appointmentOptionCollextion = client.db('doctorprotailfive-main').collection('adersoptions')
+const bookingsCollextion = client.db('doctorprotailfive-main').collection('bookings')
 
 app.get('/appointmentoption', async (req,res)=>{
   const query ={}
@@ -37,6 +38,24 @@ app.get('/appointmentoption', async (req,res)=>{
 res.send(option)
 
 })
+// class -74-4 
+/*
+* api nameng canvention
+ app.get('/bookings')
+ app.get('/bookings/:id')
+ app.post('bookings')
+ app.post('/bookings/:id')
+app.patch('/bookings/:id')
+app.delete('/bookings/:id')
+
+*/
+app.post('/bookings',async (req,res)=>{
+  const booking =req.body 
+  console.log(booking)
+  const result= await bookingsCollextion.insertOne(booking)
+  req.send(result)
+})
+
   }
   finally{
 
