@@ -29,7 +29,8 @@ const client = new MongoClient(uri, {
 async function run() {
     try {
         const appointmentOptionCollextion = client.db('doctorprotailfive-main').collection('adersoptions')
-        const bookingsCollextion = client.db('doctorprotailfive-main').collection('bookings')
+        const bookingsCollextion=client.db('doctorprotailfive-main').collection('bookings')
+        const userCollextion=client.db('doctorprotailfive-main').collection('users')
 
         app.get('/appointmentoption', async (req, res) => {
 
@@ -83,7 +84,7 @@ async function run() {
                             $map: {
                                 input: '$booked',
                                 as: 'book',
-                                in: '$book.slot'
+                                in: '$$book.slot'
                             }
                         }
                     }
@@ -120,7 +121,7 @@ async function run() {
         // app.post('/bokings',async (req,res)=>{
         app.post('/bokings', async (req, res) => {
             const booking = req.body;
-            console.log(booking);
+            // console.log(booking);
             const query = {
                 appointmentDate: booking.appointmentDate,
                 email: booking.email,
@@ -137,6 +138,19 @@ async function run() {
             const result = await bookingsCollextion.insertOne(booking);
             res.send(result);
         })
+        // class -75-3
+        // app.post('/users',async (req,res)=>{
+        //     const user =req.body ;
+        //     console.log(user)
+        //     const result = await userCollextion.insertOne(user)
+        //      res.send(result)
+        // })
+        app.post('/users/createUser', async (req, res) => {
+            const user = req.body;
+            console.log("user data push ok",user);
+            const result = await userCollextion.insertOne(user);
+            res.send(result);
+        });
     }
     finally {
 
