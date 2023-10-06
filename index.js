@@ -1,6 +1,9 @@
 
 const express = require('express')
 const { MongoClient, ServerApiVersion } = require('mongodb');
+// calls-75-4 jsonwevtoken setup 
+const jwt= require('jsonwebtoken')
+
 require('dotenv').config()
 // require('dotenv').config()
 
@@ -113,6 +116,7 @@ async function run() {
        //class-75  
        app.get('/bokings',async(req,res)=>{
         const email=req.query.email;
+        console.log('json token setup',req.headers.authorization)
         console.log(email)
     const query ={email:email}
     const bookings= await bookingsCollextion.find(query).toArray();
@@ -138,13 +142,20 @@ async function run() {
             const result = await bookingsCollextion.insertOne(booking);
             res.send(result);
         })
-        // class -75-3
-        // app.post('/users',async (req,res)=>{
-        //     const user =req.body ;
-        //     console.log(user)
-        //     const result = await userCollextion.insertOne(user)
-        //      res.send(result)
-        // })
+//class -75-4 jsonwebtoken setup 
+
+app.get('/jwt', async (req, res) => {
+    const email = req.query.email;
+    const query = { email: email };
+    const user = await userCollextion.findOne(query);
+    if (user) {
+        const token = jwt.sign({ email }, process.env.ACCESS_TOKEN, { expiresIn: '1h' })
+        return res.send({ accessToken: token });
+    }
+    res.status(403).send({ accessToken: '' })
+});
+
+      
         app.post('/users/createUser', async (req, res) => {
             const user = req.body;
             console.log("user data push ok",user);
