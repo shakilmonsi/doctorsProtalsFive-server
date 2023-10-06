@@ -27,6 +27,41 @@ const client = new MongoClient(uri, {
     }
 });
 
+// class 75-5 jwt setup step 3
+function verifyJWT(req,res,next){
+    console.log('json verifyJWT setup',req.headers.authorization)
+const authHeader =req.headers.authorization;
+if(!authHeader){
+    return res.send(401).send('unauthorized acces')
+}
+const token =authHeader.split(' ')[1];
+jwt.verify(token, process.env.ACCESS_TOKEN,function(err,decoded){
+    if(err){
+        return res.status(403).send({message: ' forvidden access'})
+    }
+    req.decoded=decoded
+    next()
+})
+}
+// class 75-5 jwt setup step 4
+function verifyJWT(req,res,next){
+    console.log('json verifyJWT setup',req.headers.authorization)
+const authHeader =req.headers.authorization;
+if(!authHeader){
+    return res.send(401).send('unauthorized acces')
+}
+const token =authHeader.split(' ')[1];
+jwt.verify(token, process.env.ACCESS_TOKEN,function(err,decoded){
+    if(err){
+        return res.status(403).send({message: ' forvidden access'})
+    }
+    req.decoded=decoded
+    next()
+})
+}
+
+
+
 // dotenv crud mongodb example
 
 async function run() {
@@ -114,13 +149,20 @@ async function run() {
         app.delete('/bookings/:id')
         */
        //class-75  
-       app.get('/bokings',async(req,res)=>{
-        const email=req.query.email;
-        console.log('json token setup',req.headers.authorization)
+       //class-75-7   verifyjwt
+       app.get('/bokings', verifyJWT, async (req, res) => {
+        const email = req.query.email;
         console.log(email)
-    const query ={email:email}
-    const bookings= await bookingsCollextion.find(query).toArray();
-    res.send(bookings)
+        // const decodedEmail = req.decoded.email;
+
+        // if (email !== decodedEmail) {
+        //     return res.status(403).send({ message: 'forbidden access' });
+        // }
+
+        const query = { email: email };
+        const bookings = await bookingsCollextion.find(query).toArray();
+        res.send(bookings);
+        console.log(bookings)
     })
         // app.post('/bokings',async (req,res)=>{
         app.post('/bokings', async (req, res) => {
@@ -154,6 +196,16 @@ app.get('/jwt', async (req, res) => {
     }
     res.status(403).send({ accessToken: '' })
 });
+
+
+
+// class -75-7  এটা হলো ইউজার গুলোকে ক্লায়ন্ড শায়টে দেকাব
+app.get('/users/createUser',async(req,res)=>{
+    const query = {}
+    const users= await userCollextion.find(query).toArray()
+    res.send(users)
+})
+
 
       
         app.post('/users/createUser', async (req, res) => {
